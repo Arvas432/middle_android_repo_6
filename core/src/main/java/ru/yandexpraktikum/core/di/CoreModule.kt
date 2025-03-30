@@ -5,6 +5,9 @@ import androidx.room.Room
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import ru.yandexpraktikum.core.data.db.NoteDao
 import ru.yandexpraktikum.core.data.db.NoteDatabase
 import ru.yandexpraktikum.core.data.repository.NotesRepositoryImpl
@@ -14,11 +17,13 @@ import javax.inject.Singleton
 private const val DATABASE_NAME = "note_database"
 
 @Module
+@InstallIn(SingletonComponent::class)
 interface CoreModule {
     companion object {
         @Provides
         @Singleton
         fun provideNoteDatabase(
+            @ApplicationContext
             context: Context,
         ): NoteDatabase {
             return Room.databaseBuilder(
@@ -29,6 +34,7 @@ interface CoreModule {
         }
 
         @Provides
+        @Singleton
         fun provideNoteDao(database: NoteDatabase): NoteDao {
             return database.noteDao()
         }
@@ -37,11 +43,4 @@ interface CoreModule {
     @Binds
     @Singleton
     fun bindNotesRepository(repositoryImpl: NotesRepositoryImpl): NotesRepository
-
-
-    // Объявите методы для создания необходимых зависимостей.
-    //
-    // Обратите внимание, что аннотацию @Provides можно использовать только в неабстрактных         // методах, поэтому можно объявить методы с @Provides внутри объекта-компаньона
 }
-
-// Добавьте аннотацию @Inject к конструкторам NotesRepositoryImpl, DataNoteMapper и             // PresentationNoteMapper
